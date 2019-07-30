@@ -22,6 +22,9 @@ planets = {
     "Find": 0
 }
 
+def test(entries):
+    print(float (entries['Object Mass'].get()))
+
 def buildEntries(window, textfields):
     entries = {}
     for field in textfields:
@@ -54,16 +57,19 @@ def buildEntries(window, textfields):
                   fill=tk.X)
     build = dict()
     build['ent'] = ent
-    build['dropdown'] = dropdown 
+    build['dropdown'] = dropdown
+    #build['window'] = window 
     return dict(build)
     
 def main():
     ret = buildEntries(window, textfields)
     ents = ret['ent']
     dropdown = ret['dropdown']
-    
+    #window = ret['window']
+    row = tk.Frame(window)
+    solve = tk.Button(window, text='Solve', command=(lambda e=ents: test(e)))
+    solve.pack(side = tk.LEFT, padx=5, pady=5)
     window.mainloop()
-
 
 main()
 
