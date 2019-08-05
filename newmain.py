@@ -23,10 +23,16 @@ class GravityWaves:
 
         # Create labels
         Label(window, text = "Object Mass: ").grid(row = 1, column = 1, sticky = W)
+        Label(window, text = "kg").grid(row = 1, column = 3, sticky = W)
         Label(window, text = "Drop Height: ").grid(row = 2, column = 1, sticky = W)
+        Label(window, text = "m").grid(row = 2, column = 3, sticky = W)
         Label(window, text = "Drop Time: ").grid(row = 3, column = 1, sticky = W)
-        Label(window, text = "Location: ").grid(row = 4, column = 1, sticky = W)
-        Label(window, text = "Custom Location: ").grid(row = 5, column = 1, sticky = W)
+        Label(window, text = "s").grid(row = 3, column = 3, sticky = W)
+        Label(window, text = "Final Velocity: ").grid(row = 4, column = 1, sticky = W)
+        Label(window, text = "m/s").grid(row = 4, column = 3, sticky = W)
+        Label(window, text = "Location: ").grid(row = 5, column = 1, sticky = W)
+        Label(window, text = "Custom Acceleration: ").grid(row = 6, column = 1, sticky = W)
+        Label(window, text = "m/s^2").grid(row = 6, column = 3, sticky = W)
 
         # Create entries
         self.objmass = StringVar()
@@ -38,34 +44,67 @@ class GravityWaves:
         self.droptime = StringVar()
         Entry(window, textvariable = self.droptime, justify = RIGHT).grid(row = 3, column = 2)
 
+        self.finalvelocity = StringVar()
+        Entry(window, textvariable = self.finalvelocity, justify = RIGHT).grid(row = 4, column = 2)
+
         self.location = StringVar()
         OptionMenu(window, self.location, *self.planets.keys()).grid(\
-            row = 4, column = 2)
+            row = 5, column = 2)
         
         self.cusloc = StringVar()
-        Entry(window, textvariable = self.cusloc, justify = RIGHT).grid(row = 5, column = 2)
+        Entry(window, textvariable = self.cusloc, justify = RIGHT).grid(row = 6, column = 2)
 
+        btSolve = Button(window, text = "Help", command = self.help).grid(\
+            row = 7, column = 1, sticky = W)
+        
         btSolve = Button(window, text = "Solve", command = self.solve).grid(\
-            row = 6, column = 2, sticky = E)
+            row = 7, column = 3, sticky = E)
 
         window.mainloop()
     
+    def solveforheight(self):
+        height = ((0+self.finalvelocity)/2)*self.droptime
+        print('height= '+height)
+        return height
+    
+    def solvefortime(self):
+        time = self.finalvelocity/self.planets[self.location.get()]
+        print('time= '+time)
+        return time
+    
+    def solveforlocation(self):
+        acc = self.finalvelocity/self.droptime
+        for (key, value) in self.planets.items():
+            testkey = float('{:2.1f}'.format(value))
+            testacc = float('{:2.1f}'.format(acc))
+            if testkey == testacc:
+                print('planet= '+key)
+                return key
+            else:
+                return 'Unknown'
+    
     def solve(self):
-        if self.location.get() == "Custom":
+        self.location = self.location.get()
+        if self.location == "Custom":
             self.location = self.cusloc.get()
-        elif self.location.get() == '':
+        elif self.location == '':
             self.location = self.cusloc.get()
+        elif self.location == 0:
+            planet = self.solveforlocation(self)
         else:
-            self.location = self.planets[self.location.get()]
+            self.location = self.planets[self.location]
         
         if self.objmass.get() == 0:
-            solveformass(self)
+            self.solveformass(self)
         elif self.dropheight.get() == 0:
-            solveforheight(self)
+            height = self.solveforheight(self)
         elif self.droptime.get() == 0:
-            solvefortime(self)
-        elif self.location.get() == 0:
-            solveforlocation(self)
+            time = solvefortime(self)
+        elif self.finalvelocity.get() == 0:
+            velocity = self.solveforvelocity(self)
+            
+    def help(self):
+        print('help')
 
 
 GravityWaves()
